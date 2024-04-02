@@ -1,0 +1,43 @@
+<% backend_port = config.get_backend_port() %>
+<% http_port = config.get_http_port(443) %>
+<% http_hostname = config.get_http_hostname() %>
+
+<%include file="_http_upstream.tmpl"/>
+
+server {
+    listen       80;
+
+    server_name ${http_hostname} ;
+
+<%include file="_http_logging.tmpl"/>
+
+    client_max_body_size ${config.get_param_int("http.client_max_body_size", 100)}M;
+
+<%include file="_http_proxy_common_server.tmpl"/>
+
+    #error_page  404              /404.html;
+
+    error_page   500 502 503 504  /50x.html;
+#    location = /50x.html {
+#        root   /srv/www/htdocs/;
+#    }
+
+% if config.active:
+    location / {
+        proxy_pass ${config.get_backend_schema()}://upstream_${ctx.slug(name)};
+        proxy_http_version 1.1;
+
+<%include file="_http_proxy_common_location.tmpl"/>
+
+        % if http_port != 443:
+        proxy_set_header Host $host:${http_port};
+        % else:
+        proxy_set_header Host $host;
+        % endif
+    }
+% else:
+   location / {
+        return 502 ;
+   }
+% endif
+}

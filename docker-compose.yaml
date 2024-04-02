@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  ingress:
+    build: ./
+    image: jkolczasty/nginx-ingress-ctrl:latest
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8888:8888"
+    working_dir: /ingress
+    environment:
+      docker_swarm: false
+    volumes:
+      - ./config:/config
+      - ./:/ingress
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+
+    networks:
+#      - vault
+#      - jenkins
+      - polcanapi
+
+networks:
+  polcanapi:
+    external: true

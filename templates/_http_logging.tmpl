@@ -1,0 +1,12 @@
+% if config.get_param_bool("http.log_stdout"):
+    error_log /dev/stdout info;
+    access_log /dev/stdout;
+% else:
+
+    % if config.get_param_bool("http.log_debug"):
+    error_log /var/log/nginx/${config.get_http_hostname()}.log debug;
+    % else:
+    error_log /var/log/nginx/${config.get_http_hostname()}.log;
+    % endif #log_debug
+
+% endif #log_stdout
