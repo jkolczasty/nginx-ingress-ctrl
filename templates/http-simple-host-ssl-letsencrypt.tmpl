@@ -42,16 +42,7 @@ server {
 
 % if config.active:
     location / {
-        proxy_pass ${config.get_backend_schema()}://upstream_${ctx.slug(name)};
-        proxy_http_version 1.1;
-
-<%include file="_http_proxy_common_location.tmpl"/>
-
-        % if http_port != 443:
-        proxy_set_header Host $host:${http_port};
-        % else:
-        proxy_set_header Host $host;
-        % endif
+<%include file="_http_proxy_location.tmpl"/>
     }
 % else:
    location / {
@@ -59,4 +50,3 @@ server {
    }
 % endif
 }
-

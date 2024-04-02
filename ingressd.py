@@ -20,7 +20,7 @@ import json
 import socket
 from pprint import pprint
 
-TEMPLATE_PATHS = ["/ingress/templates", "/templates"]
+TEMPLATE_PATHS = ["/templates", "/ingress/templates", ]
 CONFIG_PATH_DEF = "/config"
 NGINX_CONFIG_PATH_DEF = "/etc/nginx/http.d"
 NGINX_RENDER_OUTPUT_DEF = "/etc/nginx/vhosts.d"

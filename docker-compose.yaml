@@ -3,7 +3,7 @@ version: '3.7'
 services:
   ingress:
     build: ./
-    image: jkolczasty/nginx-ingress-ctrl:latest
+    image: jkolczasty/nginx-ingress-ctrl:0.9-alpine-20240403
     ports:
       - "80:80"
       - "443:443"
