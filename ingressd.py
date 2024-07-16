@@ -151,8 +151,10 @@ class NginxConfig(object):
 
     _active = None
     _ips = None
+    _backend_ip = None
 
     _watch_files = None
+    _monitor_ip = True
     changed = True
 
     def __init__(self, name, template, hostname, params):
@@ -162,6 +164,12 @@ class NginxConfig(object):
         self.hostname = hostname
         self._params = params
         self._watch_files = {}
+        backend_ip = params.get('backend.ip')
+        self._backend_ip = backend_ip
+        if backend_ip:
+            self._ips = backend_ip
+            self._monitor_ip = False
+            self.active = True
 
     @classmethod
     def from_file(cls, filename):
@@ -190,21 +198,22 @@ class NginxConfig(object):
                 self.log.info("Changed by watch file: %s", fn)
                 self.changed = True
 
-        try:
-            socket.setdefaulttimeout(3)
-            ip = socket.gethostbyname(self.hostname)
-        except Exception:
-            ip = None
+        if self._monitor_ip:
+            try:
+                socket.setdefaulttimeout(3)
+                ip = socket.gethostbyname(self.hostname)
+            except Exception:
+                ip = None
 
-        self.active = True if ip else False
+            self.active = True if ip else False
 
-        _ips = [ip] if ip else None
-        changed = _ips != self._ips
-        if changed:
-            self.log.info("IP: %s", ip)
-            self._ips = _ips
-            self.changed = True
-            return
+            _ips = [ip] if ip else None
+            changed = _ips != self._ips
+            if changed:
+                self.log.info("IP: %s", ip)
+                self._ips = _ips
+                self.changed = True
+                return
 
         return
 
